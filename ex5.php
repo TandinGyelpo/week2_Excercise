@@ -1,0 +1,60 @@
+<?php
+declare(strict_types=1);
+
+$rules = [
+    'Submitted' => ['Under review'],
+    'Under review' => ['Approved', 'Rejected'],
+    'Rejected' => ['Submitted'],
+    'Approved' => []
+];
+
+function can_move(string $from, string $to): bool {
+    global $rules;
+    return in_array($to, $rules[$from] ?? [], true);
+}
+
+$test_moves = [
+    ['Submitted', 'Under review'],
+    ['Submitted', 'Approved'],
+    ['Under review', 'Rejected'],
+    ['Approved', 'Submitted'],
+    ['Rejected', 'Submitted'],
+    ['Closed', 'Submitted']
+];
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 5 - Status Rules</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; display: flex; justify-content: center; padding: 40px 20px; }
+        .container { background: #ffffff; width: 100%; max-width: 700px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h1 { font-size: 1.5rem; color: #1e293b; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #cbd5e1; padding: 14px 18px; margin-bottom: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-weight: 600; color: #0f172a; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .badge-allowed { background-color: #dcfce7; color: #166534; }
+        .badge-blocked { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercise 5: Status Rules</h1>
+
+        <?php foreach ($test_moves as [$from, $to]): ?>
+            <?php 
+            $allowed = can_move($from, $to);
+            $badge_class = $allowed ? 'badge-allowed' : 'badge-blocked';
+            $label = $allowed ? 'Allowed' : 'Blocked';
+            ?>
+            <div class="card">
+                <span class="card-title"><?= $from ?> &rarr; <?= $to ?></span>
+                <span class="badge <?= $badge_class ?>"><?= $label ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</body>
+</html>
